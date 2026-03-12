@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1到n求和</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>1 到 n 的和值计算器</h1>
+        <p>请输入一个整数 n，计算 1 到 n 的和值</p>
+
+        <input type="number" id="numberInput" placeholder="请输入整数 n">
+        <button onclick="calculateSum()">开始计算</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function calculateSum() {
+            const n = document.getElementById('numberInput').value;
+            const resultDiv = document.getElementById('result');
+
+            if (n === '') {
+                resultDiv.innerHTML = '请输入一个整数';
+                return;
+            }
+
+            try {
+                const response = await fetch('/sum', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ n: n })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    resultDiv.innerHTML = data.error;
+                    return;
+                }
+
+                resultDiv.innerHTML = `1 到 ${data.n} 的和值是：${data.result}`;
+            } catch (error) {
+                resultDiv.innerHTML = '请求失败，请检查后端是否启动';
+            }
+        }
+    </script>
+</body>
+</html>
